@@ -1,0 +1,24 @@
+{
+    "name": "fs-bootstrap"
+  , "description": "Bootstrap project for third-party FamilySearch applications"
+  , "version": "0.1.0"
+  , "private": true
+  , "scripts": {
+    "start": "node app"
+  }
+  , "dependencies": {
+      "express": "https://github.com/visionmedia/express/tarball/master"
+    , "consolidate": "https://github.com/redbugz/consolidate.js/tarball/master"
+    , "hogan.js": "https://github.com/twitter/hogan.js/tarball/master"
+    , "cookie-sessions": "https://github.com/jenshimmelreich/cookie-sessions/tarball/master"
+    , "xml2json": ">= 0.2.3"
+    , "sprintf": ">= 0.1.1"
+    , "request": ">= 2.1.0"
+    , "async": ">= 0.1.12"
+    , "everyauth": "https://github.com/redbugz/everyauth/tarball/master"
+    , "loggly": "latest"
+    , "underscore": "latest"
+  }
+  , "main": "./app"
+  , "engines": { "node" : "0.6.10" }
+}
