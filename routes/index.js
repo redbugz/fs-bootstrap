@@ -4,7 +4,7 @@
  */
 
 exports.index = function(req, res){
-  res.render('layout', { title: 'Express' });
+  res.render('hero', { title: 'Express' });
 };
 
 //exports['/:page'] = function(req, res){
