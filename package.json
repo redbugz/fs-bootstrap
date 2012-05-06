@@ -7,10 +7,10 @@
     "start": "node app"
   }
   , "dependencies": {
-      "express": "https://github.com/visionmedia/express/tarball/master"
-    , "consolidate": "https://github.com/redbugz/consolidate.js/tarball/master"
-    , "hogan.js": "https://github.com/twitter/hogan.js/tarball/master"
+      "express": "2.5.x"
+    , "hulk-hogan": "latest"
     , "cookie-sessions": "https://github.com/jenshimmelreich/cookie-sessions/tarball/master"
+    , "http-proxy": ">= 0.8.0"
     , "xml2json": ">= 0.2.3"
     , "sprintf": ">= 0.1.1"
     , "request": ">= 2.1.0"
