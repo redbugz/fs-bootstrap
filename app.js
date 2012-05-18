@@ -85,7 +85,8 @@ users.push({ name: 'jane' });
 app.get('/me', function(req, res){
   console.log("before render me");
   var fsclient = new FS(req.cookies['fssessionid']);
-  fsclient.tree("KW79-3ZF"  ).on('complete', function(data) {
+  try {
+    fsclient.tree("KW79-3ZF"  ).on('complete', function(data) {
     console.log("fs-client me request complete: "+data);
     console.dir(data);
     console.dir(data[0]);
@@ -95,6 +96,14 @@ app.get('/me', function(req, res){
       projectName: "FS-Bootstrap"
     });
   });
+  } catch (e) {
+    console.log("error loading me: "+e);
+    res.render('users', {
+      title: 'Me',
+      persons: [],
+      projectName: "FS-Bootstrap"
+    });
+  }
 
 });
 
