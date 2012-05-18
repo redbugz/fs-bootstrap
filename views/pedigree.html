@@ -1,0 +1,10 @@
+{{> header}}
+<h1>Pedigree</h1>
+    {{> error}}
+{{persons.length}} people in this pedigree.<br/>
+<div>
+  {{#persons}}
+  <div style="float: left">{{> pedigreeNode}}</div>
+  {{/persons}}
+</ul>
+{{> footer}}

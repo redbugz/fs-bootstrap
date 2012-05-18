@@ -18,6 +18,7 @@
     , "everyauth": "https://github.com/redbugz/everyauth/tarball/master"
     , "loggly": "latest"
     , "underscore": "latest"
+    , "restler": "latest"
     , "nodemon": "latest"
   }
   , "main": "./app"

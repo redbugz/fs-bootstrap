@@ -17,6 +17,7 @@ var   express = require('express')
 
 //Extend String.prototype with format function
 require('./lib/stringFormat');
+require('./lib/fs-service');
 
 var apiProxy, routingProxy, hostListRegEx = /^\/(?:familytree|identity|reservation|authorities|ct|watch|discussion|sources|links|source-links|temple)\/.*/;
 routingProxy = new httpProxy.RoutingProxy();
@@ -31,8 +32,8 @@ apiProxy = function(req, res, next) {
     }
     if (req.session && req.session.auth && req.session.auth.familysearch && req.session.auth.familysearch.user) {
       console.dir(req.session.auth.familysearch.user);
-      console.log("adding session sessionId=" + req.session.auth.familysearch.user.sessionId);
-      req.url = req.url+"?sessionId="+req.session.auth.familysearch.user.sessionId;
+//      console.log("adding session sessionId=" + req.session.auth.familysearch.user.sessionId);
+//      req.url = req.url+"?sessionId="+req.session.auth.familysearch.user.sessionId;
     }
     return routingProxy.proxyRequest(req, res, {
       host: process.env.PROXY_HOST || "www.dev.usys.org",
@@ -80,6 +81,56 @@ var users = [];
 users.push({ name: 'tobi' });
 users.push({ name: 'loki' });
 users.push({ name: 'jane' });
+
+app.get('/me', function(req, res){
+  console.log("before render me");
+  var fsclient = new FS(req.cookies['fssessionid']);
+  fsclient.tree("KW79-3ZF"  ).on('complete', function(data) {
+    console.log("fs-client me request complete: "+data);
+    console.dir(data);
+    console.dir(data[0]);
+    res.render('users', {
+      title: 'Me',
+      users: data.pedigrees[0].persons,
+      projectName: "FS-Bootstrap"
+    });
+  });
+
+});
+
+app.get('/pedigree', function(req, res){
+  console.log("before render pedigree");
+  var fsclient = new FS(req.cookies['fssessionid']);
+  try {
+    fsclient.tree("KW79-3ZF").on('complete', function (result) {
+      console.log("fs-client pedigree request complete: " + result);
+      console.dir(result);
+      if (result instanceof Error) {
+        console.log("error loading pedigree: ");
+        res.render('pedigree', {
+          title: 'My Pedigree Chart error',
+          persons: [],
+          projectName: "FS-Bootstrap"
+        });
+      } else {
+//        console.dir(data[0]);
+        res.render('pedigree', {
+          title: 'My Pedigree Chart',
+          persons: result.pedigrees[0].persons,
+          projectName: "FS-Bootstrap"
+        });
+      }
+    });
+  } catch (e) {
+    console.log("error loading pedigree: "+e);
+    res.render('pedigree', {
+      title: 'My Pedigree Chart',
+      persons: [],
+      projectName: "FS-Bootstrap"
+    });
+  }
+
+});
 
 app.get('/users', function(req, res){
   console.log("before render users");
