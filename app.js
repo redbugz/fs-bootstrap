@@ -1,23 +1,23 @@
-
 /**
  * Module dependencies.
  */
-
 var   express = require('express')
     , routes = require('./routes')
 //    , cons = require('consolidate')
 //    , hogan = require('hogan.js')
     , hulk = require('hulk-hogan')
     , u = require('underscore')
+    , util = require('util')
     , fs = require('fs')
     , sessions = require('cookie-sessions')
     , path = require('path')
     , httpProxy = require('http-proxy')
+    , moment = require("moment")    
+    , fsapi = require("fsapi")    
     , app = module.exports = express.createServer();
 
 //Extend String.prototype with format function
 require('./lib/stringFormat');
-require('./lib/fs-service');
 
 var apiProxy, routingProxy, hostListRegEx = /^\/(?:familytree|identity|reservation|authorities|ct|watch|discussion|sources|links|source-links|temple)\/.*/;
 routingProxy = new httpProxy.RoutingProxy();
@@ -36,9 +36,9 @@ apiProxy = function(req, res, next) {
 //      req.url = req.url+"?sessionId="+req.session.auth.familysearch.user.sessionId;
     }
     return routingProxy.proxyRequest(req, res, {
-      host: process.env.PROXY_HOST || "www.dev.usys.org",
-      port: process.env.PROXY_PORT || 80,
-      https: process.env.PROXY_HTTPS || false
+      host: process.env.PROXY_HOST || "sandbox.familysearch.org",
+      port: process.env.PROXY_PORT || 443,
+      https: process.env.PROXY_HTTPS || true
     });
   } else {
     return next();
@@ -77,42 +77,50 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-var users = [];
-users.push({ name: 'tobi' });
-users.push({ name: 'loki' });
-users.push({ name: 'jane' });
-
 app.get('/me', function(req, res){
   console.log("before render me");
-  var fsclient = new FS(req.cookies['fssessionid']);
   try {
-    fsclient.tree("KW79-3ZF"  ).on('complete', function(data) {
-    console.log("fs-client me request complete: "+data);
-    console.dir(data);
-    console.dir(data[0]);
-    res.render('users', {
-      title: 'Me',
-      users: data.pedigrees[0].persons,
-      projectName: "FS-Bootstrap"
-    });
-  });
+    var fsclient = new FS(req.user ? req.user.sessionId : "");
+    try {
+      fsclient.tree("KW79-3ZF").on('complete', function (data) {
+        console.log("fs-client me request complete: " + data);
+        console.dir(data);
+        if (data instanceof Error) {
+          console.log('Error: ' + data.message);
+          res.render('users', {
+            title: 'Me (error)',
+            users: [],
+            projectName: "FS-Bootstrap"
+          });
+        } else {
+        console.dir(data[0]);
+        res.render('users', {
+          title: 'Me',
+          users: data.pedigrees[0].persons,
+          projectName: "FS-Bootstrap"
+        });
+        }
+      });
+    } catch (e) {
+      console.log("error loading me: " + e);
+      res.render('users', {
+        title: 'Me',
+        persons: [],
+        projectName: "FS-Bootstrap"
+      });
+    }
   } catch (e) {
-    console.log("error loading me: "+e);
-    res.render('users', {
-      title: 'Me',
-      persons: [],
-      projectName: "FS-Bootstrap"
-    });
+    console.log("error loading me: " + e);
   }
 
 });
 
-app.get('/pedigree', function(req, res){
+app.get('/pedigree/:id?', function(req, res){
   console.log("before render pedigree");
-  var fsclient = new FS(req.cookies['fssessionid']);
   try {
-    fsclient.tree("KW79-3ZF").on('complete', function (result) {
-      console.log("fs-client pedigree request complete: " + result);
+    var fsclient = new FS(req.user ? req.user.sessionId : "");
+    fsclient.tree(req.params.id || "").on('complete', function (result) {
+      console.log("fs-client pedigree request complete: " + util.inspect(result, true, 10, true));
       console.dir(result);
       if (result instanceof Error) {
         console.log("error loading pedigree: ");
@@ -143,11 +151,15 @@ app.get('/pedigree', function(req, res){
 
 app.get('/users', function(req, res){
   console.log("before render users");
-  res.render('users', {
-    title: 'Users',
-    users: users,
-    projectName: "FS-Bootstrap"
-  });
+  try {
+    res.render('users', {
+      title: 'Users',
+      users: ['fred','bob','paul','george'],
+      projectName: "FS-Bootstrap"
+    });
+  } catch (e) {
+    console.log("error loading /users: " + e);
+  }
 });
 
 app.get('/hero', function(req, res){
@@ -165,6 +177,36 @@ app.get('/about', function(req, res){
     users: users,
     projectName: "FS-Bootstrap"
   });
+});
+
+app.get('/:page', function(req, res){
+  console.log("before render page: "+req.params.page);
+  console.dir(req.user);
+  console.dir(req.session);
+    var fsclient = new FS(req.user ? req.user.sessionId : "");
+    fsclient.public_horizon("", function (horizon) {
+      console.log("fs-client public_horizon request complete: " + util.inspect(horizon, true, 10, true));
+      console.dir(horizon);
+      if (horizon instanceof Error) {
+        console.log("error loading horizon: ");
+        res.render('pedigree', {
+          title: 'My Pedigree Chart error',
+          persons: [],
+          projectName: "FS-Bootstrap"
+        });
+      } else {
+//        console.dir(data[0]);
+       res.render(req.params.page, {
+    user: req.user,
+    session: req.session,
+    time: moment(req.session.timestamp).fromNow(),
+    horizon: horizon,
+    projectName: "FS-Bootstrap"
+  });
+      }
+    });
+
+  
 });
 
 app.get('/', function(req, res){
@@ -186,6 +228,11 @@ app.get('*', function(req, res){
 
 var port = process.env.PORT || 3000;
 
+process.on('uncaughtException', function (err) {
+  console.log('unCaught exception: ' + err);
+  console.log('unCaught exception: ' + err.stack);
+  app.error(err);
+});
+
 app.listen(port);
 console.log("Express server listening on port %d in %s mode", port/*app.address().port*/, app.settings.env);
-

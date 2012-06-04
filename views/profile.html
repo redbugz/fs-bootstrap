@@ -1,0 +1,32 @@
+{{> header}}
+
+<h1>My Profile</h1>
+{{> error}}
+
+{{#user}}
+	<dl class="dl-horizontal">
+		<dt>username</dt>
+		<dd>{{user.username}}{{^user.username}}<em>none</em>{{/user.username}}</dd>
+		<dt>name</dt>
+		<dd>{{user.name}}{{^user.name}}<em>none</em>{{/user.name}}</dd>
+		<dt>email</dt>
+		<dd>{{user.email}}{{^user.email}}<em>none</em>{{/user.email}}</dd>
+		<dt>id</dt>
+		<dd>{{user.id}}{{^user.id}}<em>none</em>{{/user.id}}</dd>
+		<dt>horizon</dt>
+		<dd>{{horizon}}{{^horizon}}<em>none</em>{{/horizon}}</dd>
+		<dt>sessionId</dt>
+		<dd>{{user.sessionId}}</dd>
+	</dl>
+	<br>
+  <a href="/logout" class="btn">Sign Out</a>
+{{/user}}
+{{^user}}
+	<br>
+	<div class="alert alert-error">
+	  You are not currently signed in. To view your profile, please sign in.
+	</div>
+	<a href="/auth/familysearch" class="btn">Sign In</a>
+{{/user}}
+
+{{> footer}}

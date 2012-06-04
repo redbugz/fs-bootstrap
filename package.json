@@ -15,12 +15,14 @@
     , "sprintf": ">= 0.1.1"
     , "request": ">= 2.1.0"
     , "async": ">= 0.1.12"
-    , "everyauth": "https://github.com/redbugz/everyauth/tarball/master"
-    , "loggly": "latest"
+    , "winston": "latest"
     , "underscore": "latest"
     , "restler": "latest"
     , "nodemon": "latest"
+    , "moment": "latest"
+    , "node-fsapi": "latest"
+    , "everyauth": "https://github.com/redbugz/everyauth/tarball/master"
   }
   , "main": "./app"
-  , "engines": { "node" : "0.6.10" }
+  , "engines": { "node" : "0.6.x" }
 }

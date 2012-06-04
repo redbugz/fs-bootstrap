@@ -1,4 +1,10 @@
 {{> header}}
+<!--<script>-->
+  <!--Timeline_ajax_url="http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js";-->
+  <!--Timeline_urlPrefix='http://static.simile.mit.edu/timeline/api-2.3.0/';-->
+  <!--Timeline_parameters='bundle=true';-->
+<!--</script>-->
+<!--<script src="http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js?bundle=false"></script>-->
 <h1>{{title}}</h1>
 {{users.length}} Users:<br/>
 <ul>
@@ -6,4 +12,38 @@
   <li>{{assertions.names.0.value.forms.0.fullText}} <span style="font-size: smaller;font-style: italic;">({{id}})</span></li>
   {{/users}}
 </ul>
+
+<div id="my-timeline" style="height: 150px; border: 1px solid #aaa"></div>
+<noscript>
+  This page uses Javascript to show you a Timeline. Please enable Javascript in your browser to see the full page. Thank you.
+</noscript>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    return;
+//    var eventSource = new Timeline.DefaultEventSource();
+//    var bandInfos = [
+//      Timeline.createBandInfo({
+//        eventSource:    eventSource,
+//        date:           "Jun 28 2006 00:00:00 GMT",
+//        width:          "70%",
+//        intervalUnit:   Timeline.DateTime.MONTH,
+//        intervalPixels: 100
+//      }),
+//      Timeline.createBandInfo({
+//        overview:       true,
+//        eventSource:    eventSource,
+//        date:           "Jun 28 2006 00:00:00 GMT",
+//        width:          "30%",
+//        intervalUnit:   Timeline.DateTime.YEAR,
+//        intervalPixels: 200
+//      })
+//    ];
+//    bandInfos[1].syncWith = 0;
+//    bandInfos[1].highlight = true;
+
+//    tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
+//    Timeline.loadXML("example1.xml", function(xml, url) { eventSource.loadXML(xml, url); });
+  });
+</script>
 {{> footer}}
