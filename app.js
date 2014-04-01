@@ -49,7 +49,7 @@ app.configure(function(){
   app.use(express.favicon());
   app.use(express.logger('dev'));
   app.use(express.cookieParser());
-  app.use(sessions({secret: '8bfa313308bda335b456de2f145a5d23d21fedaae555e701ae4cd613cea2e4ba'}));
+  app.use(sessions({secret: 'put_a_secret_here'}));
   app.use(apiProxy);
   app.use(express.static(__dirname + '/public'));
   app.set('views', __dirname + '/views');
